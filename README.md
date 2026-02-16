@@ -2,7 +2,7 @@
 
 This guide will help you deploy and test the Solana Tip Jar program using **Anchor**.
 
-> ⚠️ Note: The `app` folder is optional. You only need it if you want a frontend to interact with the program.
+> ⚠️ Note: The `app` folder is optional. You only need it if you don't want a frontend to interact with the program.
 
 ---
 
