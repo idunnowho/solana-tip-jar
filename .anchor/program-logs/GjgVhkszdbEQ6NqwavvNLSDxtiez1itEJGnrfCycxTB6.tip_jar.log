@@ -1,0 +1,21 @@
+Streaming transaction logs mentioning GjgVhkszdbEQ6NqwavvNLSDxtiez1itEJGnrfCycxTB6. Confirmed commitment
+Transaction executed in slot 2:
+  Signature: 4XJmGcTm5kFggUia6XR5sbLqxpmtfUw23PUyzwWZX6V46bBuaDa9Z9H649164JAXPxRgNYc3yLz2XcZBzZD1N4L7
+  Status: Ok
+  Log Messages:
+    Program GjgVhkszdbEQ6NqwavvNLSDxtiez1itEJGnrfCycxTB6 invoke [1]
+    Program log: Instruction: Initialize
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program GjgVhkszdbEQ6NqwavvNLSDxtiez1itEJGnrfCycxTB6 consumed 12560 of 200000 compute units
+    Program GjgVhkszdbEQ6NqwavvNLSDxtiez1itEJGnrfCycxTB6 success
+Transaction executed in slot 3:
+  Signature: 4XJmGcTm5kFggUia6XR5sbLqxpmtfUw23PUyzwWZX6V46bBuaDa9Z9H649164JAXPxRgNYc3yLz2XcZBzZD1N4L7
+  Status: Ok
+  Log Messages:
+    Program GjgVhkszdbEQ6NqwavvNLSDxtiez1itEJGnrfCycxTB6 invoke [1]
+    Program log: Instruction: Initialize
+    Program 11111111111111111111111111111111 invoke [2]
+    Program 11111111111111111111111111111111 success
+    Program GjgVhkszdbEQ6NqwavvNLSDxtiez1itEJGnrfCycxTB6 consumed 12560 of 200000 compute units
+    Program GjgVhkszdbEQ6NqwavvNLSDxtiez1itEJGnrfCycxTB6 success

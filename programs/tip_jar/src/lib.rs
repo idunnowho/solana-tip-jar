@@ -1,7 +1,8 @@
 use anchor_lang::prelude::*;
 use anchor_lang::system_program::{transfer, Transfer};
 
-declare_id!("11111111111111111111111111111111"); // Placeholder, will be replaced by Anchor during deployment or change to your actual program ID
+ // Placeholder, will be replaced by Anchor during deployment or change to your actual program ID
+declare_id!("11111111111111111111111111111111");
 
 #[program]
 pub mod tip_jar {

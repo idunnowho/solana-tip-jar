@@ -5,9 +5,14 @@ import { useEffect, useState } from "react";
 import { PublicKey, SystemProgram } from "@solana/web3.js";
 import idl from "../../target/idl/tip_jar.json";
 
-const PROGRAM_ID = new PublicKey("GjgVhkszdbEQ6NqwavvNLSDxtiez1itEJGnrfCycxTB6");
+// PROGRAM ID - CHANGE TO YOUR PROGRAM ID OF THE DEPLOYED PROGRAM/SMART CONTRACT
+// ngl i dont think this needs to be changed since the IDL already has the correct program ID, but just in case, here it is:
+// yeah the IDL has the correct program ID, so you can ignore this, but if you want to change it for some reason, here it is:
+const PROGRAM_ID = new PublicKey("GjgVhkszdbEQ6NqwavvNLSDxtiez1itEJGnrfCycxTB6"); 
 
-// 🔥 IMPORTANT: Replace with YOUR owner pubkey
+
+
+// THIS OWNS THE JAR - CHANGE TO YOUR WALLET ADDRESS
 const OWNER = new PublicKey("E7xUZZBvnDu5d3cPTyPCBaGCS9wuAiPRWC3yzR4RQPFz");
 
 export default function App() {

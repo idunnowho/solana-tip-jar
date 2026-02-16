@@ -1,7 +1,14 @@
-.anchor
+# Node
+node_modules/
+dist/
+.env
+npm-debug.log
+
+# Anchor / Solana
+target/
+Anchor.toml.lock
+
+# IDE
+.vscode/
+.idea/
 .DS_Store
-target
-**/*.rs.bk
-node_modules
-test-ledger
-.yarn

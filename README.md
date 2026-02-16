@@ -1,152 +1,86 @@
-# Solana Tip Jar
+# Solana Tip Jar - Setup Guide
 
-A simple **Solana Tip Jar** example using **Anchor**, **React**, and **Phantom Wallet**.  
-This project demonstrates creating a PDA (program-derived account), sending SOL tips, and viewing totals.  
+This guide will help you deploy and test the Solana Tip Jar program using **Anchor**.
 
-> ⚠️ Note: The OWNER public key in this repo is a placeholder (`11111111111111111111111111111111`). Replace with your own wallet for actual withdrawals.
-
----
-
-## Table of Contents
-
-1. [Prerequisites](#prerequisites)  
-2. [Clone the Repo](#clone-the-repo)  
-3. [Install Dependencies](#install-dependencies)  
-4. [Set Up Environment](#set-up-environment)  
-5. [Build and Deploy the Program (Optional)](#build-and-deploy-the-program-optional)  
-6. [Run the Frontend](#run-the-frontend)  
-7. [How it Works](#how-it-works)  
-8. [Notes / Safety](#notes--safety)  
+> ⚠️ Note: The `app` folder is optional. You only need it if you want a frontend to interact with the program.
 
 ---
 
-## Prerequisites
+## 1. Deploy the Program
 
-Make sure you have installed:
+1. Make sure you have installed all dependencies:  
 
-1. **Node.js & npm**  
    ```bash
-   node -v
-   npm -v
+   # Solana CLI
+   solana --version
 
-Recommended: Node.js v20+
+   # Rust
+   rustc --version
 
-    Rust (for Anchor programs)
+   # Anchor CLI
+   anchor --version
 
-rustup --version
-rustc --version
+    Build and deploy the program once inside :
 
-Install: https://www.rust-lang.org/tools/install
+    anchor build
+    anchor deploy
 
-Solana CLI
+2. Update Program ID
 
-solana --version
+After deployment, Anchor will generate an IDL file:
 
-Install: https://docs.solana.com/cli/install-solana-cli-tools
+target/idl/tip_jar.json
 
-Anchor CLI
+    Open your lib.rs file.
 
-anchor --version
+    Replace the declare_id! with the address found in tip_jar.json. Example:
 
-Install:
+declare_id!("YourNewProgramIDHere");
 
-    cargo install --git https://github.com/coral-xyz/anchor avm --locked --force
-    avm install latest
-    avm use latest
+    This ensures your program code references the correct deployed program.
 
-    Phantom Wallet (for testing the frontend)
+3. Set the Owner
 
-Clone the Repo
+In your frontend or scripts (e.g., app/App.tsx), set the OWNER variable to your personal Solana wallet address:
 
-git clone https://github.com/idunnowho/solana-tip-jar.git
-cd solana-tip-jar
+const OWNER = new PublicKey("YourPersonalSolanaWalletPubkey");
 
-Install Dependencies
-1. Frontend (React)
+This wallet will receive withdrawals from the Tip Jar.
+4. Test
+
+    Make sure your wallet has SOL on devnet:
+
+solana airdrop 2
+
+    Test the program using the frontend (app) or scripts:
 
 cd app
 npm install
+npm run dev
 
-Packages included:
+    Connect Phantom Wallet and send tips to the jar.
 
-    @solana/wallet-adapter-react
+    Check the total tipped amount in the frontend.
 
-    @solana/wallet-adapter-react-ui
+5. Dependencies
+
+Make sure these are installed for the frontend:
 
     @solana/web3.js
 
     @coral-xyz/anchor
 
-2. Anchor / Solana Program
+    @solana/wallet-adapter-react
 
-cd ../program
-cargo build-bpf    # or `anchor build`
+    @solana/wallet-adapter-react-ui
 
-Set Up Environment
+For the program:
 
-Create a .env file in the frontend folder:
+    Anchor CLI
 
-# Frontend placeholder for OWNER pubkey
-REACT_APP_OWNER_PUBKEY=11111111111111111111111111111111
+    Solana CLI
 
-# Optional: point to devnet
-REACT_APP_SOLANA_NETWORK=devnet
+    Rust toolchain
 
-    ⚠️ Replace REACT_APP_OWNER_PUBKEY with your wallet if you want to withdraw funds.
 
-Build and Deploy the Program (Optional)
-
-If you want to deploy the Tip Jar smart contract yourself:
-
-cd program
-anchor build
-solana program deploy target/deploy/tip_jar.so
-
-    Save the program ID returned — this is what your frontend PROGRAM_ID should use.
-
-    Make sure your wallet has SOL on devnet:
-
-    solana airdrop 2
-
-Run the Frontend
-
-cd app
-npm run dev
-
-    Open the app in the browser (default http://localhost:5173).
-
-    Connect Phantom Wallet.
-
-    Click “Send Tip” to tip the PDA.
-
-    Total tips will be displayed on the page.
-
-How it Works
-
-    Initialize PDA:
-
-        The frontend computes a PDA using the OWNER key and “jar” seed.
-
-        If it doesn’t exist, initialize() is called to create it.
-
-    Send Tip:
-
-        tip(amount) sends SOL from your connected wallet to the PDA.
-
-        Updates total tipped.
-
-    Withdraw (if implemented):
-
-        The smart contract can have a withdraw() function to send funds to the OWNER.
-
-        Only the OWNER public key can receive withdrawals.
-
-Notes / Safety
-
-    This repo does not include a real wallet. The OWNER pubkey is a placeholder.
-
-    Anyone can fork this repo and test on devnet safely.
-
-    Always double-check transaction amounts before sending real SOL.
-
-    The PDA is program-controlled, meaning the only way to withdraw is through the program logic
+please feel free to add more features and play around with it
