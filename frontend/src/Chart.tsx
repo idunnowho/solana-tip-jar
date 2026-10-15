@@ -1,6 +1,12 @@
 import { useEffect, useRef } from "react";
+import { multiplierAt } from "./game";
 
 type Phase = "lobby" | "betting" | "flying" | "crashed";
+
+function elapsedFor(multiplier: number) {
+  if (multiplier <= 1) return 0;
+  return (Math.log(multiplier) / 0.06) * 1000;
+}
 
 type ChartProps = {
   phase: Phase;
@@ -11,7 +17,6 @@ type ChartProps = {
 
 export default function Chart({ phase, multiplier, crashAt, cashoutAt }: ChartProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const lobbyRef = useRef(0);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -21,7 +26,7 @@ export default function Chart({ phase, multiplier, crashAt, cashoutAt }: ChartPr
     let frame = 0;
     let stopped = false;
 
-    const draw = (now: number) => {
+    const draw = () => {
       if (stopped) return;
       const rect = canvas.getBoundingClientRect();
       const width = Math.max(1, Math.floor(rect.width * devicePixelRatio));
@@ -50,17 +55,17 @@ export default function Chart({ phase, multiplier, crashAt, cashoutAt }: ChartPr
         context.stroke();
       }
 
-      const live = phase === "lobby" ? 1 + ((Math.sin(now / 900) + 1) / 2) * 1.8 : multiplier;
-      if (phase === "lobby") lobbyRef.current = live;
+      const live = Math.max(1, multiplier);
       const ceiling = Math.max(live, crashAt ?? live, cashoutAt ?? 1, 2);
       const crashed = phase === "crashed";
       const color = crashed ? "#ff4d6d" : "#3dff9a";
+      const span = Math.max(elapsedFor(live), 1);
 
       context.beginPath();
       const steps = 80;
       for (let i = 0; i <= steps; i += 1) {
         const progress = i / steps;
-        const value = 1 + (live - 1) * progress;
+        const value = multiplierAt(span * progress);
         const x = 28 + progress * (cssWidth - 56);
         const y = cssHeight - 28 - ((value - 1) / (ceiling - 1 || 1)) * (cssHeight - 64);
         if (i === 0) context.moveTo(x, y);
@@ -73,7 +78,7 @@ export default function Chart({ phase, multiplier, crashAt, cashoutAt }: ChartPr
       context.stroke();
       context.shadowBlur = 0;
 
-      if (cashoutAt && cashoutAt <= live && phase !== "lobby") {
+      if (cashoutAt && cashoutAt <= live && phase !== "betting") {
         const progress = (cashoutAt - 1) / (live - 1 || 1);
         const x = 28 + Math.min(1, progress) * (cssWidth - 56);
         const y = cssHeight - 28 - ((cashoutAt - 1) / (ceiling - 1 || 1)) * (cssHeight - 64);

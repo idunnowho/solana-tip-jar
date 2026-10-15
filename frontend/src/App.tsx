@@ -15,12 +15,15 @@ import {
   MAX_CASHOUT,
   MIN_BET_SOL,
   MIN_CASHOUT,
+  multiplierAt,
   PHASE_BETTING,
   PHASE_RESOLVED,
   roundPda,
   vaultPda,
   xToBps,
 } from "./game";
+
+const PREVIEW_CRASHES = [1.48, 2.35, 1, 3.8];
 
 const SLOT_HASHES = new PublicKey("SysvarS1otHashes111111111111111111111111111");
 
@@ -72,6 +75,7 @@ export default function App() {
   const anchorWallet = useAnchorWallet();
   const [stage, setStage] = useState<Stage>("lobby");
   const [multiplier, setMultiplier] = useState(1);
+  const [previewCrash, setPreviewCrash] = useState(PREVIEW_CRASHES[0]);
   const [round, setRound] = useState<RoundView | null>(null);
   const [bet, setBet] = useState<BetView | null>(null);
   const [history, setHistory] = useState<number[]>([]);
@@ -174,6 +178,38 @@ export default function App() {
   }, [round]);
 
   useEffect(() => {
+    if (stage !== "lobby") return;
+    let index = 0;
+    let started = performance.now();
+    let holdUntil = 0;
+    let frame = 0;
+    const step = (now: number) => {
+      if (holdUntil > 0 && now < holdUntil) {
+        frame = requestAnimationFrame(step);
+        return;
+      }
+      if (holdUntil > 0) {
+        index = (index + 1) % PREVIEW_CRASHES.length;
+        started = now;
+        holdUntil = 0;
+      }
+      const target = PREVIEW_CRASHES[index];
+      const live = multiplierAt((now - started) * 2.2);
+      if (live >= target) {
+        setMultiplier(target);
+        setPreviewCrash(target);
+        holdUntil = now + 1100;
+      } else {
+        setMultiplier(live);
+        setPreviewCrash(target);
+      }
+      frame = requestAnimationFrame(step);
+    };
+    frame = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(frame);
+  }, [stage]);
+
+  useEffect(() => {
     if (stage !== "flying" || !round) return;
     const crashAt = bpsToX(round.crashBps);
     const started = performance.now();
@@ -253,12 +289,10 @@ export default function App() {
   const payoutFits = potentialLamports + 1_000_000 < liquidity;
   const cashoutAt = bet ? bpsToX(bet.cashoutBps) : stage === "betting" ? cashout : null;
   const crashAt = round && round.phase === PHASE_RESOLVED ? bpsToX(round.crashBps) : null;
-  const headline =
-    stage === "crashed" && crashAt
-      ? formatX(crashAt)
-      : stage === "flying" || stage === "betting"
-        ? formatX(multiplier)
-        : "1.00x";
+  const previewBust = stage === "lobby" && multiplier + 0.001 >= previewCrash;
+  const shownCrash = stage === "lobby" ? previewCrash : crashAt;
+  const chartPhase = previewBust ? "crashed" : stage === "lobby" ? "flying" : stage;
+  const headline = formatX(previewBust && stage === "lobby" ? previewCrash : stage === "crashed" && crashAt ? crashAt : multiplier);
 
   return (
     <main className="app">
@@ -275,17 +309,19 @@ export default function App() {
 
       <section className="layout">
         <div className={`stage ${stage}`}>
-          <Chart phase={stage} multiplier={multiplier} crashAt={crashAt} cashoutAt={cashoutAt} />
+          <Chart phase={chartPhase} multiplier={multiplier} crashAt={shownCrash} cashoutAt={cashoutAt} />
           <div className="stage-head">
-            <span className="badge">{stage === "betting" ? `${secondsLeft}s` : stage}</span>
+            <span className="badge">
+              {stage === "betting" ? `${secondsLeft}s` : stage === "lobby" ? "preview" : stage}
+            </span>
             <span className="ghost">Bank {formatSol(liquidity)} SOL</span>
           </div>
           <div className="readout">
             <div>
               <p className="kicker">
-                {stage === "crashed" ? "Crashed" : stage === "flying" ? "In flight" : "Next flight"}
+                {stage === "crashed" ? "Crashed" : previewBust ? "Preview bust" : stage === "flying" || stage === "lobby" ? "In flight" : "Next flight"}
               </p>
-              <p className={`multiplier ${stage === "crashed" ? "bust" : "live"}`}>{headline}</p>
+              <p className={`multiplier ${stage === "crashed" || previewBust ? "bust" : "live"}`}>{headline}</p>
               <p className="fine">
                 {bet
                   ? `Your target ${formatX(bpsToX(bet.cashoutBps))} on ${formatSol(bet.amount)} SOL`
