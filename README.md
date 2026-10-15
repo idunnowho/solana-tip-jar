@@ -7,9 +7,11 @@ Devnet SOL has no real-world value. The table keeps a 1-in-20 instant bust and c
 ## Play
 
 1. Install Solana CLI 2.3.0, Anchor CLI 0.32.1, and Rust 1.89.0.
-2. Build and deploy:
+2. Build and deploy. The checked-in key matches the program id baked into the app. It is a devnet key only.
 
 ```bash
+mkdir -p target/deploy
+cp keys/crash-keypair.json target/deploy/crash-keypair.json
 anchor build
 anchor deploy --provider.cluster devnet
 ```
