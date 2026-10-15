@@ -1,86 +1,39 @@
-# Solana Tip Jar - Setup Guide
+# Rift
 
-This guide will help you deploy and test the Solana Tip Jar program using **Anchor**.
+A devnet crash game. You lock a cash-out multiplier, a future slot hash sets the crash point, and the chart flies until it busts.
 
-> ⚠️ Note: The `app` folder is optional. You only need it if you don't want a frontend to interact with the program.
+Devnet SOL has no real-world value. The table keeps a 1-in-20 instant bust and caps the crash at 50x. Cash-out targets from 1.01x through 50x win only when they are strictly below the crash point.
 
----
+## Play
 
-## 1. Deploy the Program
+1. Install Solana CLI 2.3.0, Anchor CLI 0.32.1, and Rust 1.89.0.
+2. Build and deploy:
 
-1. Make sure you have installed all dependencies:  
+```bash
+anchor build
+anchor deploy --provider.cluster devnet
+```
 
-   ```bash
-   # Solana CLI
-   solana --version
+3. Initialize and seed the bank once (the deployer wallet needs devnet SOL):
 
-   # Rust
-   rustc --version
+```bash
+npx ts-node scripts/bootstrap-devnet.ts
+```
 
-   # Anchor CLI
-   anchor --version
+4. Start the table:
 
-    Build and deploy the program once inside :
-
-    anchor build
-    anchor deploy
-
-2. Update Program ID
-
-After deployment, Anchor will generate an IDL file:
-
-target/idl/tip_jar.json
-
-    Open your lib.rs file.
-
-    Replace the declare_id! with the address found in tip_jar.json. Example:
-
-declare_id!("YourNewProgramIDHere");
-
-    This ensures your program code references the correct deployed program.
-
-3. Set the Owner
-
-In your frontend or scripts (e.g., app/App.tsx), set the OWNER variable to your personal Solana wallet address:
-
-const OWNER = new PublicKey("YourPersonalSolanaWalletPubkey");
-
-This wallet will receive withdrawals from the Tip Jar.
-4. Test
-
-    Make sure your wallet has SOL on devnet:
-
-solana airdrop 2
-
-    Test the program using the frontend (app) or scripts:
-
-cd app
+```bash
+cd frontend
 npm install
 npm run dev
+```
 
-    Connect Phantom Wallet and send tips to the jar.
+Open the app, set your wallet to Devnet, and place a bet before the countdown ends. The connected wallet launches the round and settles your bet when the flight finishes.
 
-    Check the total tipped amount in the frontend.
+Program id: `GxMvwW87a6AvD22YUHQfV25kFB4MzS8KHerjpHtJYVcA`
 
-5. Dependencies
+## Test locally
 
-Make sure these are installed for the frontend:
-
-    @solana/web3.js
-
-    @coral-xyz/anchor
-
-    @solana/wallet-adapter-react
-
-    @solana/wallet-adapter-react-ui
-
-For the program:
-
-    Anchor CLI
-
-    Solana CLI
-
-    Rust toolchain
-
-
-please feel free to add more features and play around with it
+```bash
+anchor test --provider.cluster localnet
+```
