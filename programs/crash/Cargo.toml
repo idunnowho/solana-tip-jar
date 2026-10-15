@@ -1,12 +1,12 @@
 [package]
-name = "tip_jar"
+name = "crash"
 version = "0.1.0"
-description = "Created with Anchor"
+description = "Devnet crash game"
 edition = "2021"
 
 [lib]
 crate-type = ["cdylib", "lib"]
-name = "tip_jar"
+name = "crash"
 
 [features]
 default = []
@@ -19,10 +19,8 @@ anchor-debug = []
 custom-heap = []
 custom-panic = []
 
-
 [dependencies]
 anchor-lang = "0.32.1"
-
 
 [lints.rust]
 unexpected_cfgs = { level = "warn", check-cfg = ['cfg(target_os, values("solana"))'] }
